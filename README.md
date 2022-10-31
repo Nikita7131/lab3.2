@@ -1,6 +1,6 @@
 # lab_3.2 Мартиненко Ре-22
 
-![alt tag](https://github.com/Nikita7131/lab3.2/blob/main/%D0%B1%D0%BB%D0%BE%D0%BA%20%D1%81%D1%85%D0%B5%D0%BC%D0%B0.png?raw=true"Описание небудет)")​
+![alt tag](https://github.com/Nikita7131/lab3.2/blob/main/%D0%B1%D0%BB%D0%BE%D0%BA%20%D1%81%D1%85%D0%B5%D0%BC%D0%B0.png "Описание небудет)")​
 
 ```ruby
 #include <Windows.h>
