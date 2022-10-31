@@ -3,108 +3,89 @@
 ![alt tag](https://github.com/Nikita7131/lab3.2/blob/main/main.png "Описание небудет)")​
 
 ```ruby
-
 #include <Windows.h>
 #include <stdio.h>
-#include <math.h>
-#include <conio.h>
+#include <stdlib.h>
 
-int a,b;
-double e = 0.01;
-double c;
 
-double result;
-int Metod_Used;
-unsigned int Debug;
 
-int ValuesPrined;
-int CntValuesPrined = 0;
-
-//==============================================================================================================//
+//==================================================================================================================//
 double func(double x) {
-  return pow(x, 3) - 18 * x - 83;
-  // return 2*pow((x-1000),3)-3*pow((x+500),2)+(4*x)-5; // завдання 15 варіанту, але воно інколи ламає весь код
+  return x * x * x - x * x + 2;
 }
-//==============================================================================================================//
-double method_chord(int x_prev, int x_curr, double e) {
+//==================================================================================================================//
+double bisection(double a, double b, double EPSILON, unsigned int Debug_param, unsigned int Debug_values) {
+  double c = a;
+  unsigned int CntValuesPrined;
+  while ((b - a) >= EPSILON) {
+    c = (a + b) / 2;
+    if (func(c) == 0.0) {
+      break;
+    }
+    else if (func(c) * func(a) < 0) {
+      b = c;
+    }
+    else {
+      a = c;
+    }
+    switch (Debug_param) {
+      case 1:
+        printf("root  = %lf\n", c);
+        break;
+      case 2:
+        printf("root  = %lf\n", c);
+        CntValuesPrined ++;
+        if (CntValuesPrined >= Debug_values) {
+          CntValuesPrined = 0;
+          switch (WhatTooDoo()) {
+            case 1:
+              Debug_param = 1;
+              break;
+            case 2:
+              Debug_param = 0;
+              break;
+          }
+        }
+        break;
+    }
+  }
+  return c;
+}
+//==================================================================================================================//
+double method_chord(int x_prev, int x_curr, double e, unsigned int Debug_param, unsigned int Debug_values) {
   double x_next = 0;
   double tmp;
+  unsigned int CntValuesPrined;
   do {
     tmp = x_next;
     x_next = x_curr - func(x_curr) * (x_prev - x_curr) / (func(x_prev) - func(x_curr));
     x_prev = x_curr;
     x_curr = tmp;
-    switch (Debug) {
+    switch (Debug_param) {
       case 1:
-        printf("Root = %lf\n", x_next);
+        printf("root  = %lf\n", abs(x_next - x_curr));
         break;
       case 2:
-        printf("Root = %lf\n", x_next);
+        printf("root  = %lf\n", abs(x_next - x_curr));
         CntValuesPrined ++;
-        if (CntValuesPrined >= ValuesPrined) {
-          WhatTooDoo();
+        if (CntValuesPrined >= Debug_values) {
+          CntValuesPrined = 0;
+          switch (WhatTooDoo()) {
+            case 1:
+              Debug_param = 1;
+              break;
+            case 2:
+              Debug_param = 0;
+              break;
+          }
         }
         break;
     }
-    printf("abs = %lf\n", abs(x_next - x_curr));
-
   } while (abs(x_next - x_curr) > e);
   return x_next;
 }
-//==============================================================================================================//
-void bisection(double a, double b) {
-  c = a;
-  while ((b - a) >= e) {
-    c = (a + b) / 2;
-    if (func(c) == 0.0) {
-      switch (Debug) {
-        case 1:
-          printf("Root = %lf\n", c);
-          break;
-        case 2:
-          printf("Root = %lf\n", c);
-          CntValuesPrined ++;
-          if (CntValuesPrined >= ValuesPrined) {
-            WhatTooDoo();
-          }
-          break;
-      }
-      break;
-    }
-    else if (func(c)*func(a) < 0) {
-      b = c;
-      switch (Debug) {
-        case 1:
-          printf("Root = %lf\n", c);
-          break;
-        case 2:
-          printf("Root = %lf\n", c);
-          CntValuesPrined ++;
-          if (CntValuesPrined >= ValuesPrined) {
-            WhatTooDoo();
-          }
-          break;
-      }
-    }
-    else {
-      a = c;
-      switch (Debug) {
-        case 1:
-          printf("Root = %lf\n", c);
-          break;
-        case 2:
-          printf("Root = %lf\n", c);
-          CntValuesPrined ++;
-          if (CntValuesPrined >= ValuesPrined) {
-            WhatTooDoo();
-          }
-          break;
-      }
-    }
-  }
-}
-//==============================================================================================================//
-void WhatTooDoo() {
+//==================================================================================================================//
+int WhatTooDoo() {
 
   printf("\n первищено кількість ітерацій з видачею інформації для прийняття рішення, що робити далі :");
   printf("\n 0) продовжити з такою ж кількістю ітерацій;");
@@ -116,22 +97,21 @@ void WhatTooDoo() {
 
   scanf("\n %d", &WhatDo);
 
-  CntValuesPrined = 0;
-  switch (WhatDo) {
-    case 1:
-      Debug = 1;
-      break;
-    case 2:
-      Debug = 0;
-      break;
-  }
-
   printf("\n");
+
+  return WhatDo;
 }
-//==============================================================================================================//
+//==================================================================================================================//
 int main() {
+
   double StartTime;
-  //==============================================================================================================//
+  int Metod_Used;
+  int a_input;
+  int b_input;
+  double eps_input;
+  unsigned int Debug;
+  unsigned int ValuesPrined;
+
   SetConsoleOutputCP(1251); // вмикаєм кирилицю
   SetConsoleCP(1251);
 
@@ -156,25 +136,24 @@ int main() {
   }
   //==============================================================================================================//
   printf("\n Введіть a, b, eps:");
-  while (scanf("%d %d %fl", &a, &b, &e) && func(a) * func(b) >= 0) {
+  while (scanf("%d %d %fl", &a_input, &b_input, &eps_input) && func(a_input) * func(b_input) >= 0) {
     printf("Incorrect a and b, please try again:");
   }
   printf("\n");
-  //==============================================================================================================//
+  //==================================================================================================================//
   StartTime = clock();
+
   if (Metod_Used == 1) {
-    bisection(a, b);
-    result = c;
-    printf("\n method_bisection = %lf\n", result);
+    printf("\n method_bisection = %lf\n", bisection(a_input, b_input, eps_input, Debug, ValuesPrined));
+  } else {
+    printf("\n method_chord = %f \n\n", method_chord(a_input, b_input, eps_input, Debug, ValuesPrined));
   }
-  if (Metod_Used == 2) {
-    result = method_chord(a, b, e);
-    printf("\n method_chord = %f \n\n", result);
-  }
+
   printf("\n Витрачений час на розрахунки = %f Sec\n\n", clock() - StartTime);
-  //==============================================================================================================//
+  //==================================================================================================================//
   return 0;
 }
+
 
 ```
 
